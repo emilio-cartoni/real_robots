@@ -7,6 +7,7 @@ import numpy as np
 import time
 from tqdm.auto import tqdm
 import aicrowd_api
+import pyrepgym
 
 """Local evaluation helper functions."""
 
@@ -141,10 +142,10 @@ class EvaluationService:
 
     def setup_gym_env(self, environment, action_type, n_objects):
 
-        if environment in ["R1", "R2"]:
+        if environment in ["R1", "R2", "PyRep"]:
             rnd = environment
         else:
-            raise Exception("Environment type has to be either R1 or R2")
+            raise Exception("Environment type has to be either R1, R2 or PyRep")
 
         if action_type in ['joints', 'cartesian', 'macro_action']:
             act = action_type[0].upper()
@@ -157,8 +158,16 @@ class EvaluationService:
         else:
             raise Exception("Number of objects has to be 1, 2 or 3.")
 
-        envString = 'REALRobot2020-{}{}{}-v0'.format(rnd, act, n_obj)
-        self.env = gym.make(envString)
+        if environment == "PyRep":
+            if self.visualize:
+                render_mode='human'
+            else:
+                render_mode='console'
+            self.env = gym.make("PyRepEnv-v0", render_mode=render_mode)
+        else:
+            envString = 'REALRobot2020-{}{}{}-v0'.format(rnd, act, n_obj)
+            self.env = gym.make(envString)
+
         self.env.set_goals_dataset_path(self.goals_dataset_path)
         self.env.intrinsic_timesteps = self.intrinsic_timesteps  # default=15e6
         self.env.extrinsic_timesteps = self.extrinsic_timesteps  # default=10e3
