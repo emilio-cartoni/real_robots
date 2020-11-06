@@ -49,7 +49,8 @@ class EvaluationService:
                  extrinsic_timesteps=10e3,
                  extrinsic_trials=50,
                  visualize=True,
-                 goals_dataset_path="./goals.npy.npz"):
+                 goals_dataset_path="./goals.npy.npz",
+                 selected_goals=None):
 
         self.ControllerClass = Controller
         self.intrinsic_timesteps = intrinsic_timesteps
@@ -57,6 +58,7 @@ class EvaluationService:
         self.extrinsic_trials = extrinsic_trials
         self.visualize = visualize
         self.goals_dataset_path = goals_dataset_path
+        self.selected_goals = selected_goals
 
         # Start Setup
         self.setup_gym_env(environment, action_type, n_objects)
@@ -348,8 +350,13 @@ class EvaluationService:
         
         
         for trial in range(self.extrinsic_trials):
-            
-            self.run_extrinsic_trial(trial)
+            execute = True
+            if self.selected_goals is not None:
+                if trial not in self.selected_goals:
+                    execute = False
+
+            if execute:
+                self.run_extrinsic_trial(trial)
 
             extrinsic_phase_progress_bar.update(1)
             extrinsic_phase_progress_bar.set_postfix(
@@ -412,7 +419,8 @@ def evaluate(Controller,
              extrinsic_timesteps=10e3,
              extrinsic_trials=50,
              visualize=True,
-             goals_dataset_path="./goals.npy.npz"):
+             goals_dataset_path="./goals.npy.npz",
+             selected_goals=None):
 
     evaluation_service = EvaluationService(
         Controller,
@@ -423,7 +431,8 @@ def evaluate(Controller,
         extrinsic_timesteps,
         extrinsic_trials,
         visualize,
-        goals_dataset_path
+        goals_dataset_path,
+        selected_goals
         )
     
     evaluation_service.run_intrinsic_phase()
