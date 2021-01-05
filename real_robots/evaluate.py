@@ -385,7 +385,7 @@ class EvaluationService:
                     camera.paste(current,(640,0))
                     
                     d = ImageDraw.Draw(camera)
-                    d.text((int(960*0.75),int(720*0.65)), "Action: \n" + str(action['macro_action']), fill=(0,0,0)) 
+#                    d.text((int(960*0.75),int(720*0.65)), "Action: \n" + str(action['macro_action']), fill=(0,0,0)) 
                     d.text((int(960*0.75),int(720*0.75)), "Trial: " + str(trial_number) + " Step: " + str(steps), fill=(0,0,0)) 
                     if trial_number:
                         d.text((int(960*0.7),int(720*0.8)), "Total score: " + str(score_object["score_total"])[:5], fill=(0,0,0)) 
